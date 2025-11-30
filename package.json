@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/kafkajs": "^1.8.2",
     "@types/redis": "^4.0.10",
     "@types/ws": "^8.18.1",
     "tsx": "^4.20.6",
@@ -24,6 +25,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "kafka": "^0.2.3",
+    "kafkajs": "^2.2.4",
     "redis": "^5.10.0",
     "ws": "^8.18.3"
   }
