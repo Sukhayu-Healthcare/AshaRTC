@@ -4,6 +4,7 @@ import cors from "cors";
 import { WebSocketServer, WebSocket } from "ws";
 import { doctor } from "./doctorRoute.js";
 import { patient } from "./patientRoute.js";
+import { initKafka } from "./kafka.js";
 
 
 const app = express();
@@ -21,6 +22,7 @@ const server = http.createServer(app);
 interface ExtWebSocket extends WebSocket {
   id?: string;
 }
+await initKafka();
 
 // Maps to store socket connections
 const connectedDoctors = new Map<string, ExtWebSocket>();
