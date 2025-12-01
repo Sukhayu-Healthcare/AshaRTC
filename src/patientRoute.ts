@@ -11,6 +11,7 @@ async function getAllDoctorsFromRedis() {
 
   for (const key of keys) {
     const data = await redis.hGetAll(key);
+    console.log("Doctor data from Redis:", data);
     if (data && Object.keys(data).length > 0) {
       doctors.push(data);
     }
@@ -37,7 +38,7 @@ patient.post("/patient/find-doctor", async (req, res) => {
 
     // STEP 2 → Filter available doctors
     const availableDoctors = doctors.filter(
-      (d) => d.status === "online" && d.role === role
+      (d) => d.status === "ONLINE" && d.role === role
     );
 
     if (availableDoctors.length === 0) {
