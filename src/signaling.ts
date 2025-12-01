@@ -5,6 +5,8 @@ import { WebSocketServer, WebSocket } from "ws";
 import { producer, consumer, initKafka } from "./kafka.js";
 import { redis } from "./redis.js"; // your existing redis client
 
+console.log("Starting Signaler Service...");
+
 // In-memory maps for live sockets (per-process)
 const connectedDoctors = new Map<string, WebSocket>();   // doctorID -> ws
 const connectedPatients = new Map<string, WebSocket>();  // patientID -> ws
