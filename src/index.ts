@@ -82,7 +82,7 @@ wss.on("connection", (socket: ExtWebSocket) => {
 
   // Handle disconnect
   socket.on("close", () => {
-    console.log("❌ WebSocket disconnected:", socket.id);
+    console.log(" WebSocket disconnected:", socket.id);
 
     // Remove from doctor map
     for (let [doctorID, s] of connectedDoctors.entries()) {
