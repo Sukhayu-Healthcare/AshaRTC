@@ -112,7 +112,6 @@
 //   console.log("🚀 Server running on port 5000");
 // });
 
-// signalingServer.ts
 import http from "http";
 import express from "express";
 import { WebSocketServer, WebSocket } from "ws";
@@ -146,11 +145,26 @@ function sendJSON(ws: WebSocket, obj: unknown) {
   } catch {}
 }
 
-// --- Select doctor based on level availability ---
-function getAvailableDoctor(): WebSocket | null {
+// --- Select doctor based on patient preference or fallback ---
+function getAvailableDoctor(preferredLevel?: "CHO" | "MO" | "CIVIL"): WebSocket | null {
+  const levelMap: Record<string, Map<string, WebSocket>> = {
+    CHO: choDoctors,
+    MO: moDoctors,
+    CIVIL: civilDoctors,
+  };
+
+  // 1️⃣ Try preferred level first
+  if (preferredLevel) {
+    const map = levelMap[preferredLevel];
+    if(!map) return null;
+    for (const ws of map.values()) if (ws.readyState === ws.OPEN) return ws;
+  }
+
+  // 2️⃣ Fallback: any available doctor
   for (const ws of choDoctors.values()) if (ws.readyState === ws.OPEN) return ws;
   for (const ws of moDoctors.values()) if (ws.readyState === ws.OPEN) return ws;
   for (const ws of civilDoctors.values()) if (ws.readyState === ws.OPEN) return ws;
+
   return null;
 }
 
@@ -193,8 +207,9 @@ wss.on("connection", (socket: WebSocket) => {
     if (data.type === "call-request" && socket.userType === "patient") {
       const patientID = socket.userID!;
       const patientWs = socket;
+      const preferredLevel = data.preferredLevel as "CHO" | "MO" | "CIVIL" | undefined;
 
-      const doctorWs = getAvailableDoctor();
+      const doctorWs = getAvailableDoctor(preferredLevel);
       if (!doctorWs) {
         sendJSON(patientWs, { type: "no-doctor-available" });
         return;
@@ -203,7 +218,7 @@ wss.on("connection", (socket: WebSocket) => {
       // Notify doctor
       sendJSON(doctorWs, { type: "incoming-call", fromPatientID: patientID });
       // Notify patient
-      sendJSON(patientWs, { type: "doctor-assigned", doctorID: doctorWs.userID });
+      sendJSON(patientWs, { type: "doctor-assigned", doctorID: doctorWs.userID, doctorLevel: doctorWs.level });
     }
 
     // --- WebRTC signaling messages ---
@@ -224,7 +239,7 @@ wss.on("connection", (socket: WebSocket) => {
       }
     }
 
-    // --- Handover logic (doctor transfers patient to another doctor) ---
+    // --- Handover logic ---
     if (data.type === "handover" && socket.userType === "doctor") {
       const patientID = data.patientID;
       const patientWs = patients.get(patientID);
