@@ -47,6 +47,7 @@ async function startSignaler() {
         // Try to find doctor socket in THIS process
         const doctorWs = connectedDoctors.get(doctorID);
         const patientWs = connectedPatients.get(patientID);
+        console.log("Call request for patient", patientID, "to doctor", doctorID);
 
         // Notify doctor if connected here
         if (doctorWs && doctorWs.readyState === doctorWs.OPEN) {
