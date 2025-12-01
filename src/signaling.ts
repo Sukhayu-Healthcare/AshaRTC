@@ -231,7 +231,7 @@ consumer.run({
     }
   });
 
-  server.listen(5000, () => console.log("Signaler listening on :5000"));
+  server.listen(5001, () => console.log("Signaler listening on :5001"));
 }
 
 startSignaler().catch(console.error);
