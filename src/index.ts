@@ -107,8 +107,6 @@ wss.on("connection", (socket: ExtWebSocket) => {
 });
 
 export { wss, connectedDoctors };
-
-import "./signaling.js";
 // Start server
 server.listen(5000, () => {
   console.log("🚀 Server running on port 5000");
