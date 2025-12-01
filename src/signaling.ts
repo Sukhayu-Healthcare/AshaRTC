@@ -51,6 +51,7 @@ async function startSignaler() {
 
         // Notify doctor if connected here
         if (doctorWs && doctorWs.readyState === doctorWs.OPEN) {
+          console.log(1)
           sendJSON(doctorWs, {
             type: "incoming-call",
             from: patientID,
@@ -61,6 +62,7 @@ async function startSignaler() {
 
         // Also notify patient (if connected here) that doctor has been selected
         if (patientWs && patientWs.readyState === patientWs.OPEN) {
+          console.log(2)
           sendJSON(patientWs, {
             type: "doctor-assigned",
             doctorID,
@@ -69,7 +71,7 @@ async function startSignaler() {
           });
         }
       }
-
+      console.log("Processed call-requests event");
       // You can extend other event handlers (e.g., cancel, preempt)
     },
   });
