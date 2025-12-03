@@ -216,13 +216,14 @@ wss.on("connection", (socket: WebSocket) => {
       }
 
       // Notify doctor
-      sendJSON(doctorWs, { type: "incoming-call", fromPatientID: patientID });
+      sendJSON(doctorWs, { type: "incoming-call", fromPatientID: patientID });  
       // Notify patient
       sendJSON(patientWs, { type: "doctor-assigned", doctorID: doctorWs.userID, doctorLevel: doctorWs.level });
     }
 
     // --- WebRTC signaling messages ---
     if (["offer", "answer", "ice"].includes(data.type)) {
+      console.log(`Relaying ${data.type} from ${socket.userID} to ${data.toUserID} and payload size: ${JSON.stringify(data.payload).length}`);
       const targetID = data.toUserID;
       let targetWs: WebSocket | undefined =
         patients.get(targetID) ||
@@ -231,6 +232,7 @@ wss.on("connection", (socket: WebSocket) => {
         civilDoctors.get(targetID);
 
       if (targetWs && targetWs.readyState === targetWs.OPEN) {
+        console.log(`Found target WS for ${targetID}, relaying message.`);
         sendJSON(targetWs, {
           type: data.type,
           fromUserID: socket.userID,
